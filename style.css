@@ -499,11 +499,11 @@ button:focus-visible {
   display: none;
   align-items: flex-start;
   justify-content: center;
-  padding: 40px 16px;
+  padding: 40px 16px calc(40px + env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  z-index: 100;
+  z-index: 200;
 }
 .modal-backdrop.is-open { display: flex; }
 .modal {
