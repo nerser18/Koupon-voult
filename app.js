@@ -131,7 +131,7 @@ function renderStats() {
   statsRow.innerHTML = `
     <div class="stat-card"><span class="stat-num">${allCoupons.length}</span><span class="stat-label">סה״כ שוברים</span></div>
     <div class="stat-card"><span class="stat-num" style="color:var(--teal)">${counts.active}</span><span class="stat-label">בתוקף</span></div>
-    <div class="stat-card"><span class="stat-num" style="color:var(--gold)">${counts.soon}</span><span class="stat-label">פג בקרוב</span></div>
+    <div class="stat-card"><span class="stat-num" style="color:var(--amber)">${counts.soon}</span><span class="stat-label">פג בקרוב</span></div>
     <div class="stat-card"><span class="stat-num" style="color:var(--muted)">${counts.used}</span><span class="stat-label">נוצלו</span></div>
   `;
 }

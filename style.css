@@ -4,18 +4,22 @@
    ============================================================ */
 
 :root {
-  --ink: #1B2430;
-  --ink-soft: #232E3D;
-  --ink-line: #313E50;
-  --paper: #F3E9D2;
-  --paper-edge: #E4D5AE;
-  --gold: #D4A73D;
-  --red: #B3473F;
-  --teal: #3E7C74;
-  --text-ink: #EDE6D6;
-  --text-paper: #2B2118;
-  --text-paper-muted: #6B5F4C;
-  --muted: #8A93A3;
+  /* עדכון עיצוב: פלטה בהירה בגווני ירוק-לבן-כחול.
+     שמות המשתנים נשארו כפי שהיו (ink/gold/teal וכו') כדי לא לגעת
+     בעשרות המקומות שמשתמשים בהם — רק הערכים השתנו. */
+  --ink: #F6FBF9;            /* רקע העמוד — כמעט לבן עם נגיעת מנטה, כדי שכרטיסי השובר הלבנים יבלטו */
+  --ink-soft: #EAF6F0;       /* פאנלים (סרגל עליון, מגירה, תפריט תחתון, כרטיסי סטטיסטיקה) — ירוק בהיר */
+  --ink-line: #D2E8DC;       /* קווי מסגרת/הפרדה עדינים */
+  --paper: #FFFFFF;          /* רקע כרטיס השובר */
+  --paper-edge: #DCEEFB;     /* רצועת ה"קרע" של השובר — כחול בהיר */
+  --gold: #2F80C4;           /* צבע ראשי (כפתורים/מיקוד/FAB) — כחול */
+  --amber: #D6A23A;          /* חותמת "פג בקרוב" — כתום-זהב, נפרד מהכחול הראשי */
+  --red: #D0524A;            /* חותמת "פג תוקף" / מחיקה */
+  --teal: #2FA671;           /* חותמת "בתוקף" + תג שווי — ירוק */
+  --text-ink: #16241F;       /* טקסט כהה על רקעים בהירים */
+  --text-paper: #16241F;
+  --text-paper-muted: #5C716A;
+  --muted: #5C716A;
   --radius: 14px;
 }
 
@@ -49,8 +53,8 @@ button, input, select, textarea { font-family: inherit; }
   justify-content: center;
   padding: 24px;
   background:
-    radial-gradient(circle at 20% 20%, rgba(212,167,61,0.10), transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(62,124,116,0.12), transparent 40%),
+    radial-gradient(circle at 20% 20%, rgba(47,128,196,0.10), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(47,166,113,0.12), transparent 40%),
     var(--ink);
 }
 
@@ -89,8 +93,8 @@ button:focus-visible {
 
 .auth-error, .field-error {
   color: var(--red);
-  background: rgba(179,71,63,0.12);
-  border: 1px solid rgba(179,71,63,0.35);
+  background: rgba(208,82,74,0.12);
+  border: 1px solid rgba(208,82,74,0.35);
   border-radius: 8px;
   padding: 8px 10px;
   font-size: 0.85rem;
@@ -108,12 +112,12 @@ button:focus-visible {
 }
 .btn:active { transform: scale(0.97); }
 .btn-block { width: 100%; }
-.btn-primary { background: var(--gold); color: #26200F; }
+.btn-primary { background: var(--gold); color: #FFFFFF; }
 .btn-primary:hover { opacity: 0.92; }
 .btn-ghost { background: transparent; color: var(--text-ink); border: 1px solid var(--ink-line); }
 .btn-ghost:hover { border-color: var(--gold); }
 .btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); }
-.btn-danger:hover { background: rgba(179,71,63,0.1); }
+.btn-danger:hover { background: rgba(208,82,74,0.1); }
 
 .auth-toggle {
   background: none;
@@ -235,13 +239,13 @@ button:focus-visible {
   height: 54px;
   border-radius: 50%;
   background: var(--gold);
-  color: #26200F;
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.9rem;
   font-weight: 700;
-  box-shadow: 0 6px 14px rgba(212,167,61,0.45);
+  box-shadow: 0 6px 14px rgba(47,128,196,0.35);
   border: 3px solid var(--ink-soft);
 }
 
@@ -296,7 +300,7 @@ button:focus-visible {
   font-size: 0.8rem;
   cursor: pointer;
 }
-.chip.active { background: var(--gold); color: #26200F; border-color: var(--gold); }
+.chip.active { background: var(--gold); color: #FFFFFF; border-color: var(--gold); }
 
 /* ---------------- Coupon grid & ticket card ---------------- */
 .coupon-grid {
@@ -312,7 +316,7 @@ button:focus-visible {
   border-radius: var(--radius);
   overflow: visible;
   color: var(--text-paper);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+  box-shadow: 0 4px 14px rgba(22,36,31,0.12);
 }
 .coupon-card.is-used { opacity: 0.55; }
 
@@ -336,8 +340,8 @@ button:focus-visible {
 
 .card-meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
 .code-chip {
-  background: rgba(43,33,24,0.08);
-  border: 1px dashed rgba(43,33,24,0.35);
+  background: rgba(22,36,31,0.06);
+  border: 1px dashed rgba(22,36,31,0.3);
   border-radius: 6px;
   padding: 3px 9px;
   font-size: 0.82rem;
@@ -393,7 +397,7 @@ button:focus-visible {
   inset-inline-start: 0;
   top: 10px;
   bottom: 10px;
-  border-inline-start: 2px dashed rgba(43,33,24,0.3);
+  border-inline-start: 2px dashed rgba(22,36,31,0.25);
 }
 .stub-icon {
   writing-mode: vertical-rl;
@@ -418,7 +422,7 @@ button:focus-visible {
   padding: 2px;
 }
 .stamp-active { color: var(--teal); }
-.stamp-soon { color: var(--gold); }
+.stamp-soon { color: var(--amber); }
 .stamp-used { color: var(--muted); }
 .stamp-expired { color: var(--red); }
 
@@ -429,7 +433,7 @@ button:focus-visible {
   position: absolute;
   top: 6px;
   left: 6px;
-  background: rgba(43,33,24,0.08);
+  background: rgba(22,36,31,0.06);
   border: none;
   border-radius: 50%;
   width: 26px;
