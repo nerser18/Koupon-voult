@@ -16,6 +16,28 @@ let allCoupons = [];
 let activeCategory = "all";
 let isSignUpMode = false;
 
+// ---------------- Body scroll lock (fixes iOS getting "stuck" when an overlay is open) ----------------
+// ב-iOS Safari, overlay עם position:fixed שיש לו scroll משלו, מעל body שעדיין ניתן לגלילה,
+// גורם לגלילה להיתקע/להתנהג מוזר. הפתרון הנפוץ והאמין: לנעול את ה-body ל-position:fixed
+// בזמן שה-overlay פתוח, ולשחזר את מיקום הגלילה כשסוגרים.
+let savedScrollY = 0;
+function lockBodyScroll() {
+  savedScrollY = window.scrollY;
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${savedScrollY}px`;
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
+}
+function unlockBodyScroll() {
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+  document.body.style.width = "";
+  window.scrollTo(0, savedScrollY);
+}
+
 // ---------------- Auth screen elements ----------------
 const authScreen = document.getElementById("auth-screen");
 const appScreen = document.getElementById("app-screen");
@@ -164,11 +186,13 @@ const drawerBackdrop = document.getElementById("drawer-backdrop");
 function openDrawer() {
   sideDrawer.classList.add("is-open");
   drawerBackdrop.classList.add("is-open");
+  lockBodyScroll();
   updateDrawerActiveStates();
 }
 function closeDrawer() {
   sideDrawer.classList.remove("is-open");
   drawerBackdrop.classList.remove("is-open");
+  unlockBodyScroll();
 }
 document.getElementById("menu-btn").addEventListener("click", openDrawer);
 document.getElementById("drawer-close").addEventListener("click", closeDrawer);
@@ -475,10 +499,12 @@ async function openModal(id) {
     currentImagePath = null;
   }
   modalBackdrop.classList.add("is-open");
+  lockBodyScroll();
 }
 
 function closeModal() {
   modalBackdrop.classList.remove("is-open");
+  unlockBodyScroll();
 }
 
 deleteBtn.addEventListener("click", async () => {

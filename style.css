@@ -180,6 +180,8 @@ button:focus-visible {
   flex-direction: column;
   gap: 6px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   transform: translateX(100%);
   transition: transform 0.25s ease;
 }
@@ -462,6 +464,8 @@ button:focus-visible {
   justify-content: center;
   padding: 40px 16px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   z-index: 100;
 }
 .modal-backdrop.is-open { display: flex; }
