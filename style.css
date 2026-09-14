@@ -1,0 +1,410 @@
+/* ============================================================
+   ארנק שוברים — עיצוב בהשראת פנקס כרטיסים ישן
+   טיפוגרפיה: Heebo (עברית/ממשק) + Courier Prime (קודים/מספרים)
+   ============================================================ */
+
+:root {
+  --ink: #1B2430;
+  --ink-soft: #232E3D;
+  --ink-line: #313E50;
+  --paper: #F3E9D2;
+  --paper-edge: #E4D5AE;
+  --gold: #D4A73D;
+  --red: #B3473F;
+  --teal: #3E7C74;
+  --text-ink: #EDE6D6;
+  --text-paper: #2B2118;
+  --text-paper-muted: #6B5F4C;
+  --muted: #8A93A3;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--ink);
+  color: var(--text-ink);
+  font-family: "Heebo", sans-serif;
+}
+
+h1, h2 { font-weight: 900; margin: 0; }
+
+.mono, .mono-input, .code-chip, .stat-num, input[type="date"], .card-code {
+  font-family: "Courier Prime", monospace;
+}
+
+button, input, select, textarea { font-family: inherit; }
+
+/* ---------------- Auth screen ---------------- */
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(212,167,61,0.10), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(62,124,116,0.12), transparent 40%),
+    var(--ink);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--ink-soft);
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius);
+  padding: 36px 28px 28px;
+  text-align: center;
+}
+
+.auth-stub { font-size: 2.25rem; margin-bottom: 6px; }
+.auth-title { font-size: 1.7rem; color: var(--text-ink); }
+.auth-sub { color: var(--muted); font-size: 0.9rem; margin: 8px 0 26px; }
+
+.auth-form { display: flex; flex-direction: column; gap: 14px; text-align: right; }
+
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+.field span { padding: 0 2px; }
+
+.field input, .field select, .field textarea {
+  background: var(--ink);
+  border: 1px solid var(--ink-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-ink);
+  font-size: 0.95rem;
+}
+.field input:focus, .field select:focus, .field textarea:focus,
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.auth-error, .field-error {
+  color: var(--red);
+  background: rgba(179,71,63,0.12);
+  border: 1px solid rgba(179,71,63,0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 11px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn-block { width: 100%; }
+.btn-primary { background: var(--gold); color: #26200F; }
+.btn-primary:hover { opacity: 0.92; }
+.btn-ghost { background: transparent; color: var(--text-ink); border: 1px solid var(--ink-line); }
+.btn-ghost:hover { border-color: var(--gold); }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); }
+.btn-danger:hover { background: rgba(179,71,63,0.1); }
+
+.auth-toggle {
+  background: none;
+  border: none;
+  color: var(--muted);
+  margin-top: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.auth-toggle span { color: var(--gold); font-weight: 700; }
+
+/* ---------------- App shell ---------------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--ink-line);
+  position: sticky;
+  top: 0;
+  background: var(--ink);
+  z-index: 10;
+}
+.topbar-brand { font-size: 1.15rem; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+
+.main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+/* ---------------- Stats ---------------- */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--ink-soft);
+  border: 1px solid var(--ink-line);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.stat-num { font-size: 1.6rem; font-weight: 700; display: block; }
+.stat-label { font-size: 0.78rem; color: var(--muted); }
+
+/* ---------------- Controls ---------------- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.search-input {
+  flex: 1 1 220px;
+  background: var(--ink-soft);
+  border: 1px solid var(--ink-line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-ink);
+  font-size: 0.9rem;
+}
+.status-select {
+  background: var(--ink-soft);
+  border: 1px solid var(--ink-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-ink);
+  font-size: 0.9rem;
+}
+.filter-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  background: var(--ink-soft);
+  border: 1px solid var(--ink-line);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.chip.active { background: var(--gold); color: #26200F; border-color: var(--gold); }
+
+/* ---------------- Coupon grid & ticket card ---------------- */
+.coupon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.coupon-card {
+  display: flex;
+  flex-direction: row-reverse;
+  background: var(--paper);
+  border-radius: var(--radius);
+  overflow: visible;
+  color: var(--text-paper);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+}
+.coupon-card.is-used { opacity: 0.55; }
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.card-category {
+  font-size: 0.72rem;
+  color: var(--text-paper-muted);
+  font-weight: 700;
+}
+.card-store { font-size: 1.15rem; font-weight: 900; line-height: 1.25; }
+.card-title-line { font-size: 0.88rem; color: var(--text-paper-muted); }
+
+.card-meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.code-chip {
+  background: rgba(43,33,24,0.08);
+  border: 1px dashed rgba(43,33,24,0.35);
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-size: 0.82rem;
+  letter-spacing: 0.5px;
+}
+.value-chip {
+  background: var(--teal);
+  color: #fff;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.card-expiry { font-size: 0.8rem; color: var(--text-paper-muted); margin-top: auto; }
+.card-expiry.warn { color: var(--red); font-weight: 700; }
+
+/* the tear-off stub with punch-hole perforation */
+.card-stub {
+  width: 68px;
+  flex-shrink: 0;
+  background: var(--paper-edge);
+  border-radius: var(--radius) 0 0 var(--radius);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+.card-stub::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--ink);
+  border-radius: 50%;
+}
+.card-stub::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: -8px;
+  bottom: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--ink);
+  border-radius: 50%;
+}
+.stub-perf {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 10px;
+  bottom: 10px;
+  border-inline-start: 2px dashed rgba(43,33,24,0.3);
+}
+.stub-icon {
+  writing-mode: vertical-rl;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-paper-muted);
+  letter-spacing: 1px;
+}
+.stub-stamp {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: 900;
+  transform: rotate(-14deg);
+  line-height: 1.1;
+  padding: 2px;
+}
+.stamp-active { color: var(--teal); }
+.stamp-soon { color: var(--gold); }
+.stamp-used { color: var(--muted); }
+.stamp-expired { color: var(--red); }
+
+.card-tools {
+  position: relative;
+}
+.card-delete-x {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(43,33,24,0.08);
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  color: var(--text-paper-muted);
+  font-size: 0.85rem;
+}
+
+/* ---------------- Empty state ---------------- */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.empty-ticket { font-size: 2.5rem; margin-bottom: 10px; }
+.empty-state h2 { color: var(--text-ink); font-size: 1.2rem; margin-bottom: 6px; }
+
+/* ---------------- Modal ---------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,14,20,0.6);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  overflow-y: auto;
+  z-index: 100;
+}
+.modal {
+  background: var(--ink-soft);
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 460px;
+  padding: 20px 22px 22px;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.coupon-form { display: flex; flex-direction: column; gap: 14px; text-align: right; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text-ink);
+}
+.checkbox-field input { width: 16px; height: 16px; }
+.image-preview {
+  margin-top: 8px;
+  max-width: 100%;
+  max-height: 160px;
+  border-radius: 8px;
+  border: 1px solid var(--ink-line);
+}
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 520px) {
+  .field-row { grid-template-columns: 1fr; }
+  .coupon-grid { grid-template-columns: 1fr; }
+  .topbar { padding: 14px 16px; }
+  .main { padding: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+}

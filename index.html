@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ארנק שוברים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== מסך התחברות ===================== -->
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-stub">🎫</div>
+    <h1 class="auth-title">ארנק שוברים</h1>
+    <p class="auth-sub">כל הקופונים והשוברים שלך, במקום אחד</p>
+
+    <form id="auth-form" class="auth-form">
+      <label class="field">
+        <span>אימייל</span>
+        <input type="email" id="auth-email" required autocomplete="email" placeholder="you@example.com">
+      </label>
+      <label class="field">
+        <span>סיסמה</span>
+        <input type="password" id="auth-password" required autocomplete="current-password" placeholder="לפחות 6 תווים" minlength="6">
+      </label>
+      <p id="auth-error" class="auth-error" hidden></p>
+      <button type="submit" id="auth-submit" class="btn btn-primary btn-block">כניסה</button>
+    </form>
+
+    <button id="auth-toggle" class="auth-toggle">אין לך חשבון? <span>הרשמה</span></button>
+  </div>
+</div>
+
+<!-- ===================== מסך אפליקציה ===================== -->
+<div id="app-screen" class="app-screen" hidden>
+
+  <header class="topbar">
+    <div class="topbar-brand">🎫 <span>ארנק שוברים</span></div>
+    <button id="signout-btn" class="btn btn-ghost">התנתקות</button>
+  </header>
+
+  <main class="main">
+
+    <section class="stats-row" id="stats-row"></section>
+
+    <section class="controls">
+      <input type="search" id="search-input" class="search-input" placeholder="חיפוש לפי בית עסק, קוד או תיאור…">
+      <div class="filter-group" id="category-filters"></div>
+      <select id="status-filter" class="status-select">
+        <option value="all">כל הסטטוסים</option>
+        <option value="active">בתוקף</option>
+        <option value="soon">פג בקרוב</option>
+        <option value="used">נוצל</option>
+        <option value="expired">פג תוקף</option>
+      </select>
+      <button id="add-btn" class="btn btn-primary">+ שובר חדש</button>
+    </section>
+
+    <section id="coupon-grid" class="coupon-grid"></section>
+
+    <section id="empty-state" class="empty-state" hidden>
+      <div class="empty-ticket">🎟️</div>
+      <h2>עדיין אין כאן שוברים</h2>
+      <p>לחצו על "שובר חדש" כדי להוסיף את הקופון הראשון שלכם.</p>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== מודאל הוספה/עריכה ===================== -->
+<div id="modal-backdrop" class="modal-backdrop" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">שובר חדש</h2>
+      <button id="modal-close" class="icon-btn" aria-label="סגירה">✕</button>
+    </div>
+
+    <form id="coupon-form" class="coupon-form">
+      <input type="hidden" id="coupon-id">
+
+      <label class="field">
+        <span>בית עסק *</span>
+        <input type="text" id="f-store" required placeholder="לדוגמה: קסטרו">
+      </label>
+
+      <label class="field">
+        <span>תיאור השובר</span>
+        <input type="text" id="f-title" placeholder="לדוגמה: 20% הנחה על כל הקנייה">
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span>קוד קופון</span>
+          <input type="text" id="f-code" class="mono-input" placeholder="SAVE20">
+        </label>
+        <label class="field">
+          <span>שווי / הטבה</span>
+          <input type="text" id="f-value" placeholder="₪50 או 20%">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field">
+          <span>תוקף עד</span>
+          <input type="date" id="f-expiry">
+        </label>
+        <label class="field">
+          <span>קטגוריה</span>
+          <select id="f-category">
+            <option value="מזון">מזון ומסעדות</option>
+            <option value="ביגוד">ביגוד ואופנה</option>
+            <option value="בילויים">בילויים ופנאי</option>
+            <option value="נסיעות">נסיעות</option>
+            <option value="קוסמטיקה">קוסמטיקה</option>
+            <option value="אחר" selected>אחר</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>הערות</span>
+        <textarea id="f-notes" rows="2" placeholder="תנאים מיוחדים, מספר שובר וכו׳"></textarea>
+      </label>
+
+      <label class="field">
+        <span>תמונה של השובר (אופציונלי)</span>
+        <input type="file" id="f-image" accept="image/*">
+        <img id="f-image-preview" class="image-preview" hidden alt="תצוגה מקדימה">
+      </label>
+
+      <label class="checkbox-field">
+        <input type="checkbox" id="f-used">
+        <span>השובר כבר נוצל</span>
+      </label>
+
+      <p id="form-error" class="auth-error" hidden></p>
+
+      <div class="modal-actions">
+        <button type="button" id="delete-btn" class="btn btn-danger" hidden>מחיקה</button>
+        <button type="submit" class="btn btn-primary">שמירה</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
