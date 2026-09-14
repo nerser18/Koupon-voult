@@ -352,6 +352,7 @@ button:focus-visible {
   overflow-y: auto;
   z-index: 100;
 }
+.modal-backdrop[hidden] { display: none; }
 .modal {
   background: var(--ink-soft);
   border: 1px solid var(--ink-line);
