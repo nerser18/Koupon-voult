@@ -171,7 +171,6 @@ function closeDrawer() {
   drawerBackdrop.classList.remove("is-open");
 }
 document.getElementById("menu-btn").addEventListener("click", openDrawer);
-document.getElementById("nav-menu").addEventListener("click", openDrawer);
 document.getElementById("drawer-close").addEventListener("click", closeDrawer);
 drawerBackdrop.addEventListener("click", closeDrawer);
 
@@ -226,10 +225,6 @@ document.getElementById("nav-search").addEventListener("click", () => {
 });
 
 document.getElementById("nav-add").addEventListener("click", () => openModal(null));
-
-document.getElementById("nav-filter").addEventListener("click", () => {
-  document.querySelector(".controls").scrollIntoView({ behavior: "smooth", block: "center" });
-});
 
 function getFilteredCoupons() {
   const q = document.getElementById("search-input").value.trim().toLowerCase();
@@ -326,20 +321,129 @@ document.getElementById("add-btn").addEventListener("click", () => openModal(nul
 document.getElementById("modal-close").addEventListener("click", closeModal);
 modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) closeModal(); });
 
+const scanStatus = document.getElementById("scan-status");
+
 imageInput.addEventListener("change", () => {
   const file = imageInput.files[0];
   pendingImageFile = file || null;
   if (file) {
     imagePreview.src = URL.createObjectURL(file);
     imagePreview.hidden = false;
+    runOcrAndAutofill(file);
   }
 });
+
+// ---------------- OCR (Tesseract.js — חינמי, רץ בדפדפן, בלי מפתח API) ----------------
+async function runOcrAndAutofill(file) {
+  scanStatus.hidden = false;
+  scanStatus.classList.remove("scan-done");
+  scanStatus.textContent = "מזהה טקסט מהתמונה… (יכול לקחת כמה שניות)";
+
+  try {
+    const worker = await Tesseract.createWorker("heb+eng", 1, {
+      logger: (m) => {
+        if (m.status === "recognizing text" && typeof m.progress === "number") {
+          scanStatus.textContent = `מזהה טקסט מהתמונה… ${Math.round(m.progress * 100)}%`;
+        }
+      },
+    });
+    const { data: { text } } = await worker.recognize(file);
+    await worker.terminate();
+
+    const fields = extractCouponFields(text);
+    let filledCount = 0;
+
+    const storeEl = document.getElementById("f-store");
+    if (fields.store && !storeEl.value.trim()) { storeEl.value = fields.store; filledCount++; }
+
+    const codeEl = document.getElementById("f-code");
+    if (fields.code && !codeEl.value.trim()) { codeEl.value = fields.code; filledCount++; }
+
+    const valueEl = document.getElementById("f-value");
+    if (fields.value && !valueEl.value.trim()) { valueEl.value = fields.value; filledCount++; }
+
+    const expiryEl = document.getElementById("f-expiry");
+    if (fields.expiry && !expiryEl.value) { expiryEl.value = fields.expiry; filledCount++; }
+
+    const categoryEl = document.getElementById("f-category");
+    if (fields.category) { categoryEl.value = fields.category; }
+
+    const notesEl = document.getElementById("f-notes");
+    if (text.trim() && !notesEl.value.trim()) {
+      notesEl.value = "טקסט שזוהה מהתמונה:\n" + text.trim().slice(0, 500);
+    }
+
+    scanStatus.classList.add("scan-done");
+    scanStatus.textContent = filledCount > 0
+      ? `זיהינו ${filledCount} שדות אוטומטית — כדאי לבדוק ולתקן במידת הצורך.`
+      : "לא הצלחנו לזהות שדות בבירור — הטקסט המלא נוסף להערות, אפשר להשלים ידנית.";
+  } catch (err) {
+    console.error("OCR error:", err);
+    scanStatus.textContent = "זיהוי הטקסט נכשל, אבל התמונה נשמרה — אפשר למלא את הפרטים ידנית.";
+  }
+}
+
+// ניחוש שדות מתוך טקסט חופשי שזוהה בסריקה — היוריסטיקה מבוססת ביטויים רגולריים,
+// לא בינה מלאכותית, ולכן כדאי תמיד לבדוק את התוצאה.
+function extractCouponFields(rawText) {
+  const lines = rawText.split("\n").map(l => l.trim()).filter(Boolean);
+  const result = { store: null, code: null, value: null, expiry: null, category: null };
+
+  // קוד קופון: קודם לפי תווית מפורשת, אחרת טוקן שמשלב אותיות+ספרות
+  const codeLabelMatch = rawText.match(/(?:קוד\s*קופון|קוד)\s*[:\-]?\s*([A-Za-z0-9\-]{3,20})/);
+  if (codeLabelMatch) {
+    result.code = codeLabelMatch[1];
+  } else {
+    const tokenMatch = rawText.match(/\b(?=[A-Z0-9\-]{4,15}\b)(?=[A-Z0-9\-]*[A-Z])(?=[A-Z0-9\-]*[0-9])[A-Z0-9\-]{4,15}\b/);
+    if (tokenMatch) result.code = tokenMatch[0];
+  }
+
+  // שווי/הנחה: אחוז או סכום בשקלים
+  const percentMatch = rawText.match(/(\d{1,3})\s*%/);
+  const currencyMatch = rawText.match(/₪\s*(\d+([.,]\d+)?)|(\d+([.,]\d+)?)\s*(?:ש["׳]?ח|שקל)/);
+  if (percentMatch) {
+    result.value = `${percentMatch[1]}%`;
+  } else if (currencyMatch) {
+    result.value = `₪${currencyMatch[1] || currencyMatch[3]}`;
+  }
+
+  // תאריך תפוגה: DD/MM/YYYY או DD.MM.YY וכו'
+  const dateMatch = rawText.match(/\b(\d{1,2})[./\-](\d{1,2})[./\-](\d{2,4})\b/);
+  if (dateMatch) {
+    let [, d, m, y] = dateMatch;
+    if (y.length === 2) y = "20" + y;
+    d = d.padStart(2, "0");
+    m = m.padStart(2, "0");
+    const isValid = +m >= 1 && +m <= 12 && +d >= 1 && +d <= 31;
+    if (isValid) result.expiry = `${y}-${m}-${d}`;
+  }
+
+  // קטגוריה: לפי מילות מפתח נפוצות
+  const categoryKeywords = {
+    "מזון": ["מסעדה", "מסעד", "אוכל", "קפה", "בית קפה", "פיצה", "בורגר", "משלוח"],
+    "ביגוד": ["בגדים", "אופנה", "ביגוד", "נעליים"],
+    "בילויים": ["קולנוע", "סרט", "בילוי", "כרטיס", "הופעה", "פארק", "אטרקציה"],
+    "נסיעות": ["טיסה", "מלון", "נסיעה", "חופשה", "רכב", "השכרת רכב"],
+    "קוסמטיקה": ["קוסמטיקה", "איפור", "טיפוח", "בושם"],
+  };
+  for (const [cat, keywords] of Object.entries(categoryKeywords)) {
+    if (keywords.some(kw => rawText.includes(kw))) { result.category = cat; break; }
+  }
+
+  // שם בית עסק: השורה הראשונה המשמעותית שאינה קוד/תאריך/אחוז בלבד
+  const junkLine = /^[\d\s./\-%₪]+$/;
+  result.store = lines.find(l => l.length >= 2 && l.length <= 40 && !junkLine.test(l)) || null;
+
+  return result;
+}
 
 async function openModal(id) {
   couponForm.reset();
   formError.hidden = true;
   pendingImageFile = null;
   imagePreview.hidden = true;
+  scanStatus.hidden = true;
+  scanStatus.classList.remove("scan-done");
   document.getElementById("coupon-id").value = "";
 
   if (id) {

@@ -44,8 +44,8 @@
     <span class="topbar-spacer"></span>
   </header>
 
-  <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
-  <nav id="side-drawer" class="side-drawer" hidden>
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
+  <nav id="side-drawer" class="side-drawer">
     <div class="drawer-header">
       <span class="drawer-title">תפריט</span>
       <button id="drawer-close" class="icon-btn" aria-label="סגירה">✕</button>
@@ -98,17 +98,11 @@
     <button type="button" id="nav-home" class="nav-item">
       <span class="nav-icon">🏠</span><span class="nav-label">בית</span>
     </button>
-    <button type="button" id="nav-search" class="nav-item">
-      <span class="nav-icon">🔍</span><span class="nav-label">חיפוש</span>
-    </button>
     <button type="button" id="nav-add" class="nav-item nav-item-fab">
       <span class="nav-fab">+</span>
     </button>
-    <button type="button" id="nav-filter" class="nav-item">
-      <span class="nav-icon">🎚️</span><span class="nav-label">סינון</span>
-    </button>
-    <button type="button" id="nav-menu" class="nav-item">
-      <span class="nav-icon">☰</span><span class="nav-label">תפריט</span>
+    <button type="button" id="nav-search" class="nav-item">
+      <span class="nav-icon">🔍</span><span class="nav-label">חיפוש</span>
     </button>
   </nav>
 </div>
@@ -169,8 +163,9 @@
       </label>
 
       <label class="field">
-        <span>תמונה של השובר (אופציונלי)</span>
-        <input type="file" id="f-image" accept="image/*">
+        <span>סריקת שובר — צלמו או העלו תמונה, ונזהה את הפרטים אוטומטית</span>
+        <input type="file" id="f-image" accept="image/*" capture="environment">
+        <p id="scan-status" class="scan-status" hidden></p>
         <img id="f-image-preview" class="image-preview" hidden alt="תצוגה מקדימה">
       </label>
 
@@ -190,6 +185,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>
