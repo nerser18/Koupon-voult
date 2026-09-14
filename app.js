@@ -14,6 +14,7 @@ const SOON_DAYS = 7;
 let currentUser = null;
 let allCoupons = [];
 let activeCategory = "all";
+let activeStatus = "all";
 let isSignUpMode = false;
 
 // ---------------- Body scroll lock (fixes iOS getting "stuck" when an overlay is open) ----------------
@@ -151,14 +152,33 @@ function renderStats() {
   allCoupons.forEach(c => counts[getStatus(c)]++);
   const statsRow = document.getElementById("stats-row");
   statsRow.innerHTML = `
-    <div class="stat-card"><span class="stat-num">${allCoupons.length}</span><span class="stat-label">סה״כ שוברים</span></div>
-    <div class="stat-card"><span class="stat-num" style="color:var(--teal)">${counts.active}</span><span class="stat-label">בתוקף</span></div>
-    <div class="stat-card"><span class="stat-num" style="color:var(--amber)">${counts.soon}</span><span class="stat-label">פג בקרוב</span></div>
-    <div class="stat-card"><span class="stat-num" style="color:var(--muted)">${counts.used}</span><span class="stat-label">נוצלו</span></div>
+    <div class="stat-circle-wrap"><span class="stat-circle">${allCoupons.length}</span><span class="stat-circle-label">סה״כ</span></div>
+    <div class="stat-circle-wrap"><span class="stat-circle c-active">${counts.active}</span><span class="stat-circle-label">בתוקף</span></div>
+    <div class="stat-circle-wrap"><span class="stat-circle c-soon">${counts.soon}</span><span class="stat-circle-label">פג בקרוב</span></div>
+    <div class="stat-circle-wrap"><span class="stat-circle c-used">${counts.used}</span><span class="stat-circle-label">נוצלו</span></div>
   `;
 }
 
 // ---------------- Filters ----------------
+const STATUS_FILTER_OPTIONS = [
+  ["all", "הכל"], ["active", "בתוקף"], ["soon", "פג בקרוב"], ["used", "נוצל"], ["expired", "פג תוקף"],
+];
+
+function renderStatusFilters() {
+  const el = document.getElementById("status-filters");
+  el.innerHTML = STATUS_FILTER_OPTIONS.map(([val, label]) => `
+    <button type="button" class="chip ${activeStatus === val ? "active" : ""}" data-status="${val}">${label}</button>
+  `).join("");
+  el.querySelectorAll(".chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeStatus = btn.dataset.status;
+      renderStatusFilters();
+      renderAll();
+    });
+  });
+}
+renderStatusFilters();
+
 function renderCategoryFilters() {
   const el = document.getElementById("category-filters");
   const cats = ["all", ...CATEGORIES];
@@ -176,8 +196,22 @@ function renderCategoryFilters() {
   });
 }
 
-document.getElementById("search-input").addEventListener("input", renderAll);
-document.getElementById("status-filter").addEventListener("change", renderAll);
+// חיפוש: שדה מוסתר כברירת מחדל, נפתח רק בלחיצה על כפתור החיפוש
+const searchWrap = document.getElementById("search-wrap");
+const searchInput = document.getElementById("search-input");
+
+function toggleSearch() {
+  const isOpen = searchWrap.classList.toggle("is-open");
+  if (isOpen) {
+    searchWrap.scrollIntoView({ behavior: "smooth", block: "center" });
+    searchInput.focus();
+  } else {
+    searchInput.value = "";
+    renderAll();
+  }
+}
+
+searchInput.addEventListener("input", renderAll);
 
 // ---------------- Side drawer ----------------
 const sideDrawer = document.getElementById("side-drawer");
@@ -216,16 +250,16 @@ renderDrawerCategories();
 
 document.querySelectorAll("#drawer-status-links .drawer-link").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.getElementById("status-filter").value = btn.dataset.status;
+    activeStatus = btn.dataset.status;
+    renderStatusFilters();
     renderAll();
     closeDrawer();
   });
 });
 
 function updateDrawerActiveStates() {
-  const status = document.getElementById("status-filter").value;
   document.querySelectorAll("#drawer-status-links .drawer-link").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.status === status);
+    btn.classList.toggle("active", btn.dataset.status === activeStatus);
   });
   document.querySelectorAll("#drawer-category-links .drawer-link").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.cat === activeCategory);
@@ -235,28 +269,25 @@ function updateDrawerActiveStates() {
 // ---------------- Bottom nav ----------------
 document.getElementById("nav-home").addEventListener("click", () => {
   activeCategory = "all";
-  document.getElementById("status-filter").value = "all";
-  document.getElementById("search-input").value = "";
+  activeStatus = "all";
+  searchInput.value = "";
+  searchWrap.classList.remove("is-open");
   renderCategoryFilters();
+  renderStatusFilters();
   renderAll();
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-document.getElementById("nav-search").addEventListener("click", () => {
-  const input = document.getElementById("search-input");
-  input.scrollIntoView({ behavior: "smooth", block: "center" });
-  input.focus();
-});
+document.getElementById("nav-search").addEventListener("click", toggleSearch);
 
 document.getElementById("nav-add").addEventListener("click", () => openModal(null));
 
 function getFilteredCoupons() {
-  const q = document.getElementById("search-input").value.trim().toLowerCase();
-  const statusFilter = document.getElementById("status-filter").value;
+  const q = searchInput.value.trim().toLowerCase();
 
   return allCoupons.filter(c => {
     if (activeCategory !== "all" && c.category !== activeCategory) return false;
-    if (statusFilter !== "all" && getStatus(c) !== statusFilter) return false;
+    if (activeStatus !== "all" && getStatus(c) !== activeStatus) return false;
     if (q) {
       const hay = [c.store_name, c.title, c.code, c.notes].filter(Boolean).join(" ").toLowerCase();
       if (!hay.includes(q)) return false;

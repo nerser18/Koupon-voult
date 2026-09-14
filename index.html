@@ -72,15 +72,14 @@
     <section class="stats-row" id="stats-row"></section>
 
     <section class="controls">
-      <input type="search" id="search-input" class="search-input" placeholder="חיפוש לפי בית עסק, קוד או תיאור…">
-      <div class="filter-group" id="category-filters"></div>
-      <select id="status-filter" class="status-select">
-        <option value="all">כל הסטטוסים</option>
-        <option value="active">בתוקף</option>
-        <option value="soon">פג בקרוב</option>
-        <option value="used">נוצל</option>
-        <option value="expired">פג תוקף</option>
-      </select>
+      <div id="search-wrap" class="search-wrap">
+        <input type="search" id="search-input" class="search-input" placeholder="חיפוש לפי בית עסק, קוד או תיאור…">
+      </div>
+      <div class="filter-scroll">
+        <div class="filter-group" id="status-filters"></div>
+        <span class="filter-divider"></span>
+        <div class="filter-group" id="category-filters"></div>
+      </div>
       <button id="add-btn" class="btn btn-primary">+ שובר חדש</button>
     </section>
 

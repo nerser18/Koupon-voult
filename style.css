@@ -39,7 +39,7 @@ html, body {
 
 h1, h2 { font-weight: 900; margin: 0; }
 
-.mono, .mono-input, .code-chip, .stat-num, input[type="date"], .card-code {
+.mono, .mono-input, .code-chip, .stat-circle, input[type="date"], .card-code {
   font-family: "Courier Prime", monospace;
 }
 
@@ -253,30 +253,55 @@ button:focus-visible {
 
 /* ---------------- Stats ---------------- */
 .stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 22px;
 }
-.stat-card {
+.stat-circle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+.stat-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   background: var(--ink-soft);
-  border: 1px solid var(--ink-line);
-  border-radius: 10px;
-  padding: 14px 16px;
+  border: 2px solid var(--ink-line);
+  color: var(--text-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.1rem;
+  flex-shrink: 0;
 }
-.stat-num { font-size: 1.6rem; font-weight: 700; display: block; }
-.stat-label { font-size: 0.78rem; color: var(--muted); }
+.stat-circle.c-active { border-color: var(--teal); color: var(--teal); }
+.stat-circle.c-soon { border-color: var(--amber); color: var(--amber); }
+.stat-circle.c-used { border-color: var(--muted); color: var(--muted); }
+.stat-circle-label {
+  font-size: 0.66rem;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
 
 /* ---------------- Controls ---------------- */
 .controls {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
-  align-items: center;
   margin-bottom: 22px;
 }
+.search-wrap { display: none; }
+.search-wrap.is-open { display: block; }
 .search-input {
-  flex: 1 1 220px;
+  width: 100%;
   background: var(--ink-soft);
   border: 1px solid var(--ink-line);
   border-radius: 8px;
@@ -284,15 +309,25 @@ button:focus-visible {
   color: var(--text-ink);
   font-size: 0.9rem;
 }
-.status-select {
-  background: var(--ink-soft);
-  border: 1px solid var(--ink-line);
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: var(--text-ink);
-  font-size: 0.9rem;
+.filter-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.filter-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.filter-scroll::-webkit-scrollbar { display: none; }
+.filter-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--ink-line);
+  flex-shrink: 0;
+  margin: 4px 2px;
+}
+.filter-group { display: flex; flex-wrap: nowrap; gap: 6px; flex-shrink: 0; }
 .chip {
   background: var(--ink-soft);
   border: 1px solid var(--ink-line);
@@ -301,6 +336,8 @@ button:focus-visible {
   padding: 6px 14px;
   font-size: 0.8rem;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .chip.active { background: var(--gold); color: #FFFFFF; border-color: var(--gold); }
 
