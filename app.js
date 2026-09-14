@@ -73,17 +73,22 @@ function translateAuthError(msg) {
   return msg;
 }
 
-document.getElementById("signout-btn").addEventListener("click", () => sb.auth.signOut());
+document.getElementById("drawer-signout").addEventListener("click", () => {
+  closeDrawer();
+  sb.auth.signOut();
+});
 
 sb.auth.onAuthStateChange((_event, session) => {
   currentUser = session?.user ?? null;
   if (currentUser) {
     authScreen.hidden = true;
     appScreen.hidden = false;
+    document.getElementById("drawer-email").textContent = currentUser.email || "";
     loadCoupons();
   } else {
     appScreen.hidden = true;
     authScreen.hidden = false;
+    closeDrawer();
   }
 });
 
@@ -151,6 +156,80 @@ function renderCategoryFilters() {
 
 document.getElementById("search-input").addEventListener("input", renderAll);
 document.getElementById("status-filter").addEventListener("change", renderAll);
+
+// ---------------- Side drawer ----------------
+const sideDrawer = document.getElementById("side-drawer");
+const drawerBackdrop = document.getElementById("drawer-backdrop");
+
+function openDrawer() {
+  sideDrawer.classList.add("is-open");
+  drawerBackdrop.classList.add("is-open");
+  updateDrawerActiveStates();
+}
+function closeDrawer() {
+  sideDrawer.classList.remove("is-open");
+  drawerBackdrop.classList.remove("is-open");
+}
+document.getElementById("menu-btn").addEventListener("click", openDrawer);
+document.getElementById("nav-menu").addEventListener("click", openDrawer);
+document.getElementById("drawer-close").addEventListener("click", closeDrawer);
+drawerBackdrop.addEventListener("click", closeDrawer);
+
+function renderDrawerCategories() {
+  const el = document.getElementById("drawer-category-links");
+  el.innerHTML = CATEGORIES.map(cat => `
+    <button type="button" class="drawer-link" data-cat="${cat}">${CATEGORY_ICONS[cat]} ${cat}</button>
+  `).join("");
+  el.querySelectorAll(".drawer-link").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeCategory = btn.dataset.cat;
+      renderCategoryFilters();
+      renderAll();
+      closeDrawer();
+    });
+  });
+}
+renderDrawerCategories();
+
+document.querySelectorAll("#drawer-status-links .drawer-link").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.getElementById("status-filter").value = btn.dataset.status;
+    renderAll();
+    closeDrawer();
+  });
+});
+
+function updateDrawerActiveStates() {
+  const status = document.getElementById("status-filter").value;
+  document.querySelectorAll("#drawer-status-links .drawer-link").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.status === status);
+  });
+  document.querySelectorAll("#drawer-category-links .drawer-link").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.cat === activeCategory);
+  });
+}
+
+// ---------------- Bottom nav ----------------
+document.getElementById("nav-home").addEventListener("click", () => {
+  activeCategory = "all";
+  document.getElementById("status-filter").value = "all";
+  document.getElementById("search-input").value = "";
+  renderCategoryFilters();
+  renderAll();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("nav-search").addEventListener("click", () => {
+  const input = document.getElementById("search-input");
+  input.scrollIntoView({ behavior: "smooth", block: "center" });
+  input.focus();
+});
+
+document.getElementById("nav-add").addEventListener("click", () => openModal(null));
+
+document.getElementById("nav-filter").addEventListener("click", () => {
+  document.querySelector(".controls").scrollIntoView({ behavior: "smooth", block: "center" });
+});
 
 function getFilteredCoupons() {
   const q = document.getElementById("search-input").value.trim().toLowerCase();
@@ -291,11 +370,11 @@ async function openModal(id) {
     deleteBtn.hidden = true;
     currentImagePath = null;
   }
-  modalBackdrop.hidden = false;
+  modalBackdrop.classList.add("is-open");
 }
 
 function closeModal() {
-  modalBackdrop.hidden = true;
+  modalBackdrop.classList.remove("is-open");
 }
 
 deleteBtn.addEventListener("click", async () => {

@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>ארנק שוברים</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,9 +39,33 @@
 <div id="app-screen" class="app-screen" hidden>
 
   <header class="topbar">
+    <button id="menu-btn" class="icon-btn menu-btn" aria-label="תפריט">☰</button>
     <div class="topbar-brand">🎫 <span>ארנק שוברים</span></div>
-    <button id="signout-btn" class="btn btn-ghost">התנתקות</button>
+    <span class="topbar-spacer"></span>
   </header>
+
+  <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+  <nav id="side-drawer" class="side-drawer" hidden>
+    <div class="drawer-header">
+      <span class="drawer-title">תפריט</span>
+      <button id="drawer-close" class="icon-btn" aria-label="סגירה">✕</button>
+    </div>
+    <p id="drawer-email" class="drawer-email"></p>
+
+    <span class="drawer-label">הצגה לפי סטטוס</span>
+    <div class="drawer-links" id="drawer-status-links">
+      <button type="button" class="drawer-link" data-status="all">🎟️ כל השוברים</button>
+      <button type="button" class="drawer-link" data-status="active">🟢 בתוקף</button>
+      <button type="button" class="drawer-link" data-status="soon">🟡 פג בקרוב</button>
+      <button type="button" class="drawer-link" data-status="used">⚪ נוצלו</button>
+      <button type="button" class="drawer-link" data-status="expired">🔴 פג תוקף</button>
+    </div>
+
+    <span class="drawer-label">קטגוריות</span>
+    <div class="drawer-links" id="drawer-category-links"></div>
+
+    <button id="drawer-signout" class="btn btn-ghost drawer-signout">התנתקות</button>
+  </nav>
 
   <main class="main">
 
@@ -69,10 +93,28 @@
     </section>
 
   </main>
+
+  <nav class="bottom-nav">
+    <button type="button" id="nav-home" class="nav-item">
+      <span class="nav-icon">🏠</span><span class="nav-label">בית</span>
+    </button>
+    <button type="button" id="nav-search" class="nav-item">
+      <span class="nav-icon">🔍</span><span class="nav-label">חיפוש</span>
+    </button>
+    <button type="button" id="nav-add" class="nav-item nav-item-fab">
+      <span class="nav-fab">+</span>
+    </button>
+    <button type="button" id="nav-filter" class="nav-item">
+      <span class="nav-icon">🎚️</span><span class="nav-label">סינון</span>
+    </button>
+    <button type="button" id="nav-menu" class="nav-item">
+      <span class="nav-icon">☰</span><span class="nav-label">תפריט</span>
+    </button>
+  </nav>
 </div>
 
 <!-- ===================== מודאל הוספה/עריכה ===================== -->
-<div id="modal-backdrop" class="modal-backdrop" hidden>
+<div id="modal-backdrop" class="modal-backdrop">
   <div class="modal">
     <div class="modal-header">
       <h2 id="modal-title">שובר חדש</h2>
